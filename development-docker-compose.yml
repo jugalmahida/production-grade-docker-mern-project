@@ -1,0 +1,95 @@
+services:
+  # Traefik (API Gateway / Reverse Proxy)
+  traefik:
+    image: traefik:v3.0
+    container_name: dev_traefik
+    command:
+      - "--api.insecure=true" # Enables the Traefik dashboard locally
+      - "--providers.docker=true" # Tells Traefik to listen to Docker
+      - "--providers.docker.exposedbydefault=false" # Only route containers with traefik.enable=true
+      - "--entrypoints.web.address=:80" # Standard HTTP port
+    ports:
+      - "80:80" # The only port you need exposed for your apps
+      - "8080:8080" # Traefik Dashboard (http://localhost:8080)
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock:ro" # Allows Traefik to read Docker labels
+    networks:
+      - dev_net
+
+  # Database Service
+
+  mongodb:
+    image: mongo:latest
+    container_name: dev_mongodb
+    networks:
+      - dev_net
+    volumes:
+      - mongodb_data:/data/db
+    restart: unless-stopped
+
+  # Backend Service
+
+  backend:
+    build:
+      context: ./apps/backend
+    container_name: dev_backend
+    networks:
+      - dev_net
+    env_file:
+      - ./apps/backend/.env
+    depends_on:
+      - mongodb
+    labels:
+      - "traefik.enable=true"
+      # Routes http://api.localhost to this container
+      - "traefik.http.routers.backend.rule=Host(`api.localhost`)"
+      - "traefik.http.services.backend.loadbalancer.server.port=8001"
+    restart: unless-stopped
+
+  # Frontend Service (Main)
+
+  frontend:
+    build:
+      context: ./apps/frontend
+    container_name: dev_frontend
+    networks:
+      - dev_net
+    env_file:
+      - ./apps/frontend/.env
+    depends_on:
+      - backend
+    labels:
+      - "traefik.enable=true"
+      # Routes http://frontend.localhost to this container
+      - "traefik.http.routers.frontend.rule=Host(`frontend.localhost`)"
+      - "traefik.http.services.frontend.loadbalancer.server.port=80"
+    restart: unless-stopped
+
+  # Frontend Admin Service
+
+  frontend_admin:
+    build:
+      context: ./apps/frontend_admin
+    container_name: dev_frontend_admin
+    networks:
+      - dev_net
+    env_file:
+      - ./apps/frontend_admin/.env
+    depends_on:
+      - backend
+    labels:
+      - "traefik.enable=true"
+      # Routes http://admin.localhost to this container
+      - "traefik.http.routers.frontend_admin.rule=Host(`admin.localhost`)"
+      - "traefik.http.services.frontend_admin.loadbalancer.server.port=80"
+    restart: unless-stopped
+
+# Networks & Volumes
+
+networks:
+  dev_net:
+    driver: bridge
+
+volumes:
+  mongodb_data:
+    name: dev_mongodb_data

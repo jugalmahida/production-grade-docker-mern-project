@@ -16,14 +16,10 @@ RUN pnpm install --frozen-lockfile
 COPY . .
 
 # Stage 2: Production Runner
-
 FROM node:22-alpine
 
 # Enable pnpm here as well
 RUN corepack enable pnpm
-
-# Set to production environment
-ENV NODE_ENV=production
 
 # Install PM2 globally
 RUN npm install -g pm2
@@ -47,7 +43,7 @@ RUN chown -R node:node /app && chmod -R 755 /app
 # Switch to the non-root user for security
 USER node
 
-# Expose the port your Express app runs on
+# Expose the port of Express app
 EXPOSE 8001
 
 # Use pm2-runtime to keep the container alive in the foreground
