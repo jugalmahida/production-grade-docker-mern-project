@@ -9,7 +9,7 @@ services:
       - "--providers.docker.exposedbydefault=false" # Only route containers with traefik.enable=true
       - "--entrypoints.web.address=:80" # Standard HTTP port
     ports:
-      - "80:80" # The only port you need exposed for your apps
+      - "80:80" # The only port needed exposed for apps
       - "8080:8080" # Traefik Dashboard (http://localhost:8080)
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock:ro" # Allows Traefik to read Docker labels
@@ -17,10 +17,11 @@ services:
       - dev_net
 
   # Database Service
-
   mongodb:
     image: mongo:latest
     container_name: dev_mongodb
+    ports:
+      - "27017:27017" # Only for the development, remove ports in production
     networks:
       - dev_net
     volumes:
@@ -28,7 +29,6 @@ services:
     restart: unless-stopped
 
   # Backend Service
-
   backend:
     build:
       context: ./apps/backend
@@ -47,7 +47,6 @@ services:
     restart: unless-stopped
 
   # Frontend Service (Main)
-
   frontend:
     build:
       context: ./apps/frontend
@@ -66,7 +65,6 @@ services:
     restart: unless-stopped
 
   # Frontend Admin Service
-
   frontend_admin:
     build:
       context: ./apps/frontend_admin
@@ -85,7 +83,6 @@ services:
     restart: unless-stopped
 
 # Networks & Volumes
-
 networks:
   dev_net:
     driver: bridge
