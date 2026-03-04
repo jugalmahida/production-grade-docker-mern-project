@@ -20,8 +20,8 @@ services:
   mongodb:
     image: mongo:latest
     container_name: dev_mongodb
-    ports:
-      - "27017:27017" # Only for the development, remove ports in production
+    # ports:
+    # - "27017:27017" # Only for the development, remove ports in production & docker build
     networks:
       - dev_net
     volumes:
