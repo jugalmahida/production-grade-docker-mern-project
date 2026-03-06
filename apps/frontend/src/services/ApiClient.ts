@@ -2,7 +2,7 @@ import axios from "axios";
 import AppConstants from "@/constants/AppConstants";
 
 export const apiClient = axios.create({
-  baseURL: AppConstants.devApiUrl,
+  baseURL: AppConstants.devProxyApiUrl,
   headers: {
     Accept: "application/json",
     "Content-Type": "application/json",

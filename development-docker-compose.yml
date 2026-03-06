@@ -35,8 +35,6 @@ services:
       retries: 3
       interval: 10s
       timeout: 2s
-    ports:
-      - "8001:8001"
     restart: unless-stopped
 
   # Frontend Service (Main)

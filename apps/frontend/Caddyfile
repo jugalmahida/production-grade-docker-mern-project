@@ -1,24 +1,31 @@
 :80 {
-    # Set the root directory where the React build files live
-    root * /srv
-
     # Enable modern, high-performance compression
     encode zstd gzip
 
-    # React client-side routing: try the file, then fallback to index.html
-    try_files {path} /index.html
+    # API requests → backend
+    handle /api/* {
+        reverse_proxy backend:8001
+    }
 
-    # Enable the static file server
-    file_server
+    # Everything else → React static files
+    handle {
+        # Set the root directory where the React build files live
+        root * /srv
+        # React client-side routing: try the file, then fallback to index.html
+        try_files {path} /index.html
+        # Enable the static file server
+        file_server
+    }
 
     # Setup aggressive caching for static assets (js, css, images, fonts)
     @static {
         file
         path *.ico *.css *.js *.gif *.webp *.avif *.jpg *.jpeg *.png *.svg *.woff *.woff2
     }
+
     header @static Cache-Control "max-age=31536000, public, immutable"
-    
-    # Optional: Basic security headers
+
+    # Basic security headers
     header {
         X-Content-Type-Options nosniff
         X-Frame-Options DENY
