@@ -36,6 +36,10 @@ services:
       interval: 10s
       timeout: 2s
     restart: unless-stopped
+    # It will deploy the 4 replicas of backend service & remove the the container_name because it will
+    # auto name it. (backend-1, backend-2, etc...)
+    # deploy:
+    #   replicas: 4
 
   # Frontend Service (Main)
   frontend:
