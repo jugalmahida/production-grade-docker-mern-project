@@ -1,1 +1,75 @@
-# Coming Soon
+# 1. Never Expose the ports in production except 80 & 443 (default port)
+# 2. Use the docker networks
+
+services:
+  # Database Service
+  mongodb:
+    image: mongo:latest
+    container_name: prod_mongodb
+    networks:
+      - prod_net
+    volumes:
+      - mongodb_data:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      retries: 5
+      timeout: 5s
+    restart: unless-stopped
+
+  # Backend Service
+  backend:
+    image: production-grade-docker-mern-project-backend:latest
+    networks:
+      - prod_net
+    env_file:
+      - ./apps/backend/.env
+    depends_on:
+      mongodb:
+        condition: service_healthy
+    healthcheck:
+      test:
+        ["CMD", "wget", "--spider", "-q", "http://localhost:8001/api/v1/health"]
+      retries: 3
+      interval: 10s
+      timeout: 2s
+    restart: unless-stopped
+    deploy:
+      replicas: 3
+
+  # Frontend Service (Main)
+  frontend:
+    image: production-grade-docker-mern-project-frontend:latest
+    networks:
+      - prod_net
+    env_file:
+      - ./apps/frontend/.env
+    depends_on:
+      backend:
+        condition: service_healthy
+    restart: unless-stopped
+    deploy:
+      replicas: 3
+
+  # Frontend - Admin panel
+  frontend_admin:
+    image: production-grade-docker-mern-project-frontend_admin:latest
+    networks:
+      - prod_net
+    env_file:
+      - ./apps/frontend_admin/.env
+    depends_on:
+      backend:
+        condition: service_healthy
+    restart: unless-stopped
+    deploy:
+      replicas: 2
+
+# Networks & Volumes
+networks:
+  prod_net:
+    driver: bridge
+
+volumes:
+  mongodb_data:
+    name: prod_mongodb_data
