@@ -4,12 +4,18 @@
   "description": "Docker management scripts for MERN stack",
   "private": "true",
   "scripts": {
+    "docker:list:services": "docker compose -f production-docker-compose.yml config --services",
     "docker:up:all": "docker compose -f api-gateway-docker-compose.yml up -d && docker compose -f production-docker-compose.yml up -d",
     "docker:down:all": "docker compose -f production-docker-compose.yml down && docker compose -f api-gateway-docker-compose.yml down",
     "docker:start:all": "docker compose -f api-gateway-docker-compose.yml start && docker compose -f production-docker-compose.yml start",
     "docker:stop:all": "docker compose -f production-docker-compose.yml stop && docker compose -f api-gateway-docker-compose.yml stop",
     "docker:traefik:up": "docker compose -f api-gateway-docker-compose.yml up -d",
     "docker:traefik:restart": "docker compose -f api-gateway-docker-compose.yml restart",
-    "docker:traefik:down": "docker compose -f api-gateway-docker-compose.yml down"
+    "docker:traefik:down": "docker compose -f api-gateway-docker-compose.yml down",
+    "docker:up:app": "docker compose -f production-docker-compose.yml up -d",
+    "docker:up:down": "docker compose -f production-docker-compose.yml down",
+    "docker:rebuild:backend": "docker compose -f production-docker-compose.yml build backend && docker compose -f production-docker-compose.yml up -d --no-deps backend",
+    "docker:rebuild:frontend": "docker compose -f production-docker-compose.yml build frontend && docker compose -f production-docker-compose.yml up -d --no-deps frontend",
+    "docker:rebuild:adminpanel": "docker compose -f production-docker-compose.yml build frontend_admin && docker compose -f production-docker-compose.yml up -d --no-deps frontend_admin"
   }
 }

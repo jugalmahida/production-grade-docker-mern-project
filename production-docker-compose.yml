@@ -20,6 +20,9 @@ services:
   # Backend Service
   backend:
     image: mern-app-backend:latest
+    build: 
+      context: ./apps/backend
+      dockerfile: Dockerfile
     networks:
       - prod_net
     env_file:
@@ -40,6 +43,9 @@ services:
   # Frontend Service (Main)
   frontend:
     image: mern-app-frontend:latest
+    build: 
+      context: ./apps/frontend
+      dockerfile: Dockerfile
     networks:
       - prod_net
       - mern-project
@@ -63,6 +69,9 @@ services:
   # Frontend - Admin panel
   frontend_admin:
     image: mern-app-adminpanel:latest
+    build: 
+      context: ./apps/frontend_admin
+      dockerfile: Dockerfile
     networks:
       - prod_net
       - mern-project
