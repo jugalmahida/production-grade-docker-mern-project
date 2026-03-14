@@ -16,6 +16,11 @@
     "docker:up:down": "docker compose -f production-docker-compose.yml down",
     "docker:rebuild:backend": "docker compose -f production-docker-compose.yml build backend && docker compose -f production-docker-compose.yml up -d --no-deps backend",
     "docker:rebuild:frontend": "docker compose -f production-docker-compose.yml build frontend && docker compose -f production-docker-compose.yml up -d --no-deps frontend",
-    "docker:rebuild:adminpanel": "docker compose -f production-docker-compose.yml build frontend_admin && docker compose -f production-docker-compose.yml up -d --no-deps frontend_admin"
+    "docker:rebuild:adminpanel": "docker compose -f production-docker-compose.yml build frontend_admin && docker compose -f production-docker-compose.yml up -d --no-deps frontend_admin",
+    "docker:logs:frontend": "docker compose -f production-docker-compose.yml logs -f frontend",
+    "docker:logs:adminpanel": "docker compose -f production-docker-compose.yml logs -f frontend_admin",
+    "docker:logs:backend": "docker compose -f production-docker-compose.yml logs -f backend",
+    "docker:ps": "docker compose -f production-docker-compose.yml ps",
+    "docker:stats": "docker stats"
   }
 }
